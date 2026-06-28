@@ -21,14 +21,9 @@ def train_model(_df):
     target = "ADDEPEV3"
 
     model_df = _df[features + [target]].copy()
-    
-    # Drop rows with ANY missing values
     model_df = model_df.dropna()
-    
-    # Keep a copy before encoding for reference
     model_df_raw = model_df.copy()
 
-    # Encode all categorical columns
     encoders = {}
     for col in features + [target]:
         if model_df[col].dtype == "object":
@@ -77,27 +72,22 @@ with col1:
                    "Smoking", "Alcohol Use", "Income", "Education"],
         "Importance": rf.feature_importances_
     }).sort_values("Importance", ascending=True)
-
-    fig1 = px.bar(
-        importance_df, x="Importance", y="Feature",
+    fig1 = px.bar(importance_df, x="Importance", y="Feature",
         orientation="h",
         color="Importance",
-        color_continuous_scale=["#F2C4D0", "#9B2D6F", "#4A0E3A"]
-    )
+        color_continuous_scale=["#F2C4D0", "#9B2D6F", "#4A0E3A"])
     fig1.update_layout(plot_bgcolor="white", showlegend=False)
     st.plotly_chart(fig1, use_container_width=True)
 
 with col2:
     st.markdown("#### Confusion Matrix")
     cm = confusion_matrix(y_test, y_pred)
-    fig2 = px.imshow(
-        cm,
+    fig2 = px.imshow(cm,
         labels={"x": "Predicted", "y": "Actual", "color": "Count"},
         x=["No Depression", "Depression"],
         y=["No Depression", "Depression"],
         color_continuous_scale=["#F2C4D0", "#4A0E3A"],
-        text_auto=True
-    )
+        text_auto=True)
     fig2.update_layout(plot_bgcolor="white")
     st.plotly_chart(fig2, use_container_width=True)
 
@@ -152,13 +142,13 @@ if st.button("🔮 Predict Depression Risk", use_container_width=True):
     depression_prob = prob[1] * 100
 
     st.markdown("---")
-    col1, col2, col3 = st.columns([1,2,1])
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if pred == 1:
-            st.error(f"⚠️ **High Depression Risk Detected**")
+            st.error("⚠️ **High Depression Risk Detected**")
         else:
-            st.success(f"✅ **Low Depression Risk**")
-        
+            st.success("✅ **Low Depression Risk**")
+
         st.markdown(f"Predicted probability of depression: **{depression_prob:.1f}%**")
 
         fig3 = go.Figure(go.Indicator(
