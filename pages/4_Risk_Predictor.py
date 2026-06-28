@@ -31,8 +31,9 @@ def train_model(_df):
             model_df[col] = le.fit_transform(model_df[col].astype(str))
             encoders[col] = le
 
-    X = model_df[features].values
-    y = model_df[target].values
+    # Convert to numpy explicitly to avoid PyArrow issues
+    X = model_df[features].to_numpy().astype(float)
+    y = model_df[target].to_numpy().astype(int)
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
@@ -134,7 +135,7 @@ if st.button("🔮 Predict Depression Risk", use_container_width=True):
                 val = encoders[col].transform([str(val)])[0]
             except:
                 val = 0
-        input_encoded.append(val)
+        input_encoded.append(float(val))
 
     input_array = np.array(input_encoded).reshape(1, -1)
     pred = rf.predict(input_array)[0]
